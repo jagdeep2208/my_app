@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Member Management</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="container">
+
+       <div class="header-row">
+
+    <h1>Member Management</h1>
+
+    <a href="/logout" class="logout-btn">
+        Logout
+    </a>
+
+</div>
+
+<p>Manage your members easily</p>
+        <div class="dashboard">
+
+    <div class="dashboard-card">
+        <h3>Total Members</h3>
+        <div id="totalMembers">0</div>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Departments</h3>
+        <div id="totalDepartments">0</div>
+    </div>
+
+</div>
+
+<div id="departmentSection" class="department-section">
+
+    <h2>Department Overview</h2>
+
+    <div id="departmentList">
+        <p>Loading...</p>
+    </div>
+
+</div>
+
+
+        <!-- SEARCH -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search member..."
+            >
+
+        </div>
+        <div class="filter-box">
+    <select id="departmentFilter">
+        <option value="">All Departments</option>
+    </select>
+        </div>
+
+
+        <!-- ADD MEMBER BUTTON -->
+        <button id="addMemberBtn">
+            + Add Member
+        </button>
+
+
+        <!-- MEMBER FORM -->
+        <div id="memberForm" style="display: none;">
+
+            <h2 id="formTitle">
+                Add New Member
+            </h2>
+
+
+            <input
+                type="text"
+                id="membership_id"
+                placeholder="Membership ID"
+            >
+
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Name"
+            >
+
+
+            <input
+                type="text"
+                id="department"
+                placeholder="Department"
+            >
+
+
+            <input
+                type="text"
+                id="contact_no"
+                placeholder="Contact Number"
+            >
+
+
+            <input
+                type="text"
+                id="company_name"
+                placeholder="Company Name"
+            >
+
+
+            <button id="saveMemberBtn">
+                Save Member
+            </button>
+
+        </div>
+
+
+        <!-- MEMBER LIST -->
+        <div id="memberList">
+
+            <!-- Members will appear here -->
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='script.js') }}"
+    ></script>
+
+</body>
+
+</html>
