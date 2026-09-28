@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,141 +6,660 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Member Management</title>
+    <title>MemberHub | Member Management</title>
 
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
 </head>
+<!-- ================= MEMBER DETAILS MODAL ================= -->
+
+<div id="memberDetailsModal" class="member-modal">
+
+    <div class="member-modal-card">
+
+        <button
+            class="modal-close"
+            onclick="closeMemberDetails()"
+        >
+            ×
+        </button>
+
+        <div class="modal-avatar">
+            JD
+        </div>
+
+        <h2 id="detailName">Member Name</h2>
+
+        <p class="modal-subtitle">
+            Member Profile
+        </p>
+
+        <div class="member-details-grid">
+
+            <div>
+                <span>Membership ID</span>
+                <strong id="detailMembershipId">—</strong>
+            </div>
+
+            <div>
+                <span>Department</span>
+                <strong id="detailDepartment">—</strong>
+            </div>
+
+            <div>
+                <span>Contact Number</span>
+                <strong id="detailContact">—</strong>
+            </div>
+
+            <div>
+                <span>Company</span>
+                <strong id="detailCompany">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <body>
 
-    <div class="container">
+<div class="app-layout">
 
-       <div class="header-row">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar" id="sidebar">
 
-    <h1>Member Management</h1>
-
-    <a href="/logout" class="logout-btn">
-        Logout
-    </a>
-
-</div>
-
-<p>Manage your members easily</p>
-        <div class="dashboard">
-
-    <div class="dashboard-card">
-        <h3>Total Members</h3>
-        <div id="totalMembers">0</div>
-    </div>
-
-    <div class="dashboard-card">
-        <h3>Departments</h3>
-        <div id="totalDepartments">0</div>
-    </div>
-
-</div>
-
-<div id="departmentSection" class="department-section">
-
-    <h2>Department Overview</h2>
-
-    <div id="departmentList">
-        <p>Loading...</p>
-    </div>
-
-</div>
-
-
-        <!-- SEARCH -->
-        <div class="search-box">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search member..."
-            >
-
-        </div>
-        <div class="filter-box">
-    <select id="departmentFilter">
-        <option value="">All Departments</option>
-    </select>
+        <div class="brand">
+            <div class="brand-icon">M</div>
+            <div class="brand-text">
+                <strong>MemberHub</strong>
+                <span>Management System</span>
+            </div>
         </div>
 
+        <nav class="sidebar-nav">
 
-        <!-- ADD MEMBER BUTTON -->
-        <button id="addMemberBtn">
-            + Add Member
+            <p class="nav-label">MAIN</p>
+
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#memberList" class="nav-item">
+                <span class="nav-icon">♙</span>
+                <span>Manage Members</span>
+            </a>
+
+            <a href="#departmentSection" class="nav-item">
+                <span class="nav-icon">◈</span>
+                <span>Analytics</span>
+            </a>
+            <div class="department-nav">
+
+    <button
+        id="departmentsToggle"
+        class="nav-item department-toggle"
+        type="button"
+    >
+        <span class="nav-icon">▦</span>
+        <span>My Departments</span>
+        <span class="department-arrow">⌄</span>
+    </button>
+
+    <div
+        id="departmentMenu"
+        class="department-menu"
+    >
+        <button
+            type="button"
+            class="department-link"
+            data-department="CSE"
+        >
+            <span>•</span>
+            CSE
         </button>
 
-
-        <!-- MEMBER FORM -->
-        <div id="memberForm" style="display: none;">
-
-            <h2 id="formTitle">
-                Add New Member
-            </h2>
-
-
-            <input
-                type="text"
-                id="membership_id"
-                placeholder="Membership ID"
-            >
-
-
-            <input
-                type="text"
-                id="name"
-                placeholder="Name"
-            >
-
-
-            <input
-                type="text"
-                id="department"
-                placeholder="Department"
-            >
-
-
-            <input
-                type="text"
-                id="contact_no"
-                placeholder="Contact Number"
-            >
-
-
-            <input
-                type="text"
-                id="company_name"
-                placeholder="Company Name"
-            >
-
-
-            <button id="saveMemberBtn">
-                Save Member
-            </button>
-
-        </div>
-
-
-        <!-- MEMBER LIST -->
-        <div id="memberList">
-
-            <!-- Members will appear here -->
-
-        </div>
-
+        <button
+            type="button"
+            class="department-link"
+            data-department="AIML"
+        >
+            <span>•</span>
+            AIML
+        </button>
     </div>
 
+</div>
 
-    <script
-        src="{{ url_for('static', filename='script.js') }}"
-    ></script>
+            <p class="nav-label">SYSTEM</p>
 
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+                <div class="avatar">JD</div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <span>Admin Account</span>
+                </div>
+            </div>
+
+            <a href="/logout" class="logout-link">
+                <span>↪</span>
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN AREA ================= -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button id="sidebarToggle" class="icon-btn">
+                    ☰
+                </button>
+
+                <div>
+                    <span class="page-label">OVERVIEW</span>
+                    <h1>Dashboard</h1>
+                </div>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <button id="themeToggle" class="icon-btn" title="Toggle theme">
+                    ◐
+                </button>
+
+                <div class="topbar-profile">
+                    <div class="avatar small">JD</div>
+
+                    <div>
+                        <strong>Admin</strong>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <section class="content">
+
+            <!-- WELCOME -->
+            <div class="welcome-section">
+
+                <div>
+                    <p class="eyebrow">MEMBER MANAGEMENT</p>
+
+                    <h2>
+                        Good morning, Jagdeep
+                        <span>👋</span>
+                    </h2>
+
+                    <p>
+                        Here's what's happening with your organization today.
+                    </p>
+                </div>
+
+                <button id="addMemberBtn" class="primary-btn">
+                    <span>＋</span>
+                    Add Member
+                </button>
+
+            </div>
+
+
+            <!-- ================= KPI CARDS ================= -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon blue">
+                            ♙
+                        </div>
+
+                        <span class="stat-badge">
+                            Members
+                        </span>
+                    </div>
+
+                    <div class="stat-value" id="totalMembers">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Total Members
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon purple">
+                            ◈
+                        </div>
+
+                        <span class="stat-badge">
+                            Organization
+                        </span>
+                    </div>
+
+                    <div class="stat-value" id="totalDepartments">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Departments
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon green">
+                            ✓
+                        </div>
+
+                        <span class="stat-badge success">
+                            Active
+                        </span>
+                    </div>
+
+                    <div class="stat-value" id="activeMembers">
+                        —
+                    </div>
+
+                    <div class="stat-label">
+                        Active Members
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon orange">
+                            ↗
+                        </div>
+
+                        <span class="stat-badge">
+                            System
+                        </span>
+                    </div>
+
+                    <div class="stat-value">
+                        100%
+                    </div>
+
+                    <div class="stat-label">
+                        System Availability
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ANALYTICS ================= -->
+
+            <div class="dashboard-grid">
+
+                <section class="panel analytics-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Department Overview</h3>
+                            <p>Member distribution across departments</p>
+                        </div>
+
+                        <span class="panel-action">
+                            Live
+                        </span>
+
+                    </div>
+
+                    <div id="departmentSection" class="department-section">
+
+    <div class="department-chart-header">
+        <div>
+            <h2>Department Overview</h2>
+            <p>Member distribution across departments</p>
+        </div>
+
+        <span class="chart-status">
+            ● Live
+        </span>
+    </div>
+
+    <div class="department-chart-wrapper">
+        <canvas id="departmentChart"></canvas>
+    </div>
+
+    <!-- Existing department data will still be used -->
+    <div id="departmentList" class="department-list">
+        <p class="loading-state">
+            Loading department data...
+        </p>
+    </div>
+
+</div>
+
+                </section>
+
+
+                <section class="panel quick-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Quick Actions</h3>
+                            <p>Manage your directory</p>
+                        </div>
+
+                    </div>
+
+                    <div class="quick-actions">
+
+                        <button
+                            class="quick-action"
+                            onclick="document.getElementById('addMemberBtn').click()"
+                        >
+                            <span class="quick-icon blue">＋</span>
+
+                            <div>
+                                <strong>Add Member</strong>
+                                <span>Create a new member profile</span>
+                            </div>
+                        </button>
+
+
+                        <button
+                            class="quick-action"
+                            onclick="document.getElementById('searchInput').focus()"
+                        >
+                            <span class="quick-icon purple">⌕</span>
+
+                            <div>
+                                <strong>Find Member</strong>
+                                <span>Search the directory</span>
+                            </div>
+                        </button>
+
+
+                        <button
+                            class="quick-action"
+                            onclick="document.getElementById('departmentFilter').focus()"
+                        >
+                            <span class="quick-icon green">◈</span>
+
+                            <div>
+                                <strong>Filter Directory</strong>
+                                <span>Browse by department</span>
+                            </div>
+                        </button>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- ================= MEMBER DIRECTORY ================= -->
+
+            <section class="panel members-panel">
+
+                <div class="panel-header members-header">
+
+                    <div>
+                        <h3>Member Directory</h3>
+                        <p>Manage and organize your members</p>
+                    </div>
+
+                    <div class="directory-controls">
+
+                        <div class="search-box">
+
+                            <span class="search-icon">⌕</span>
+
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Search members..."
+                            >
+
+                        </div>
+
+
+                        <div class="filter-box">
+
+    <select id="departmentFilter">
+        <option value="">
+            My Departments
+        </option>
+
+        <option value="CSE">
+            CSE
+        </option>
+
+        <option value="AIML">
+            AIML
+        </option>
+    </select>
+
+</div>
+                        <div class="member-directory-actions">
+
+                             <button id="exportCsvBtn" class="export-btn">
+                                 ↓ Export CSV
+                             </button>
+
+                         </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MEMBER LIST -->
+
+                <div id="memberList" class="member-list">
+
+                    <!-- Members will be rendered by script.js -->
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ADD / EDIT FORM ================= -->
+
+            <section
+                id="memberForm"
+                class="panel member-form-panel"
+                style="display: none;"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3 id="formTitle">
+                            Add New Member
+                        </h3>
+
+                        <p>
+                            Enter the member's information below.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="close-form"
+                        onclick="document.getElementById('memberForm').style.display='none'"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="membership_id">
+                            Membership ID
+                        </label>
+
+                        <input
+                            type="text"
+                            id="membership_id"
+                            placeholder="e.g. MEM-001"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Enter full name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="department">
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            id="department"
+                            placeholder="e.g. Engineering"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="contact_no">
+                            Contact Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="contact_no"
+                            placeholder="Enter contact number"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label for="company_name">
+                            Company Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="company_name"
+                            placeholder="Enter company name"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        onclick="document.getElementById('memberForm').style.display='none'"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        id="saveMemberBtn"
+                        class="primary-btn"
+                    >
+                        Save Member
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="footer">
+
+                <span>
+                    MemberHub Management System
+                </span>
+
+                <span>
+                    Built with Flask · MySQL · JavaScript
+                </span>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script
+    src="{{ url_for('static', filename='script.js') }}"
+></script>
 </body>
 
 </html>
+```

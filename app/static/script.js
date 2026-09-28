@@ -40,6 +40,17 @@ const memberList =
 
 
 // ==========================================
+// MY DEPARTMENTS ELEMENTS
+// ==========================================
+
+const departmentsToggle =
+    document.getElementById("departmentsToggle");
+
+const departmentMenu =
+    document.getElementById("departmentMenu");
+
+
+// ==========================================
 // GLOBAL DATA
 // ==========================================
 
@@ -47,317 +58,88 @@ let allMembers = [];
 
 
 // ==========================================
-// OPEN ADD MEMBER FORM
+// OPEN / CLOSE MY DEPARTMENTS
 // ==========================================
-
-addMemberBtn.addEventListener("click", function () {
-
-    clearForm();
-
-    memberForm.style.display = "block";
-
-    formTitle.textContent =
-        "Add New Member";
-
-    saveMemberBtn.textContent =
-        "Save Member";
-
-    membershipIdInput.disabled = false;
-
-    memberForm.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-
-});
-
-
-// ==========================================
-// SAVE / UPDATE MEMBER
-// ==========================================
-
-saveMemberBtn.addEventListener(
-    "click",
-    async function () {
-
-        const membershipId =
-            membershipIdInput.value.trim();
-
-        const name =
-            nameInput.value.trim();
-
-        const department =
-            departmentInput.value.trim();
-
-        const contactNo =
-            contactNoInput.value.trim();
-        // CONTACT NUMBER VALIDATION
-
-if (!/^\d{10}$/.test(contactNo)) {
-
-    alert(
-        "Contact number must contain exactly 10 digits."
-    );
-
-    contactNoInput.focus();
-
-    return;
-}
-
-        const companyName =
-            companyNameInput.value.trim();
-// FORM VALIDATION
 
 if (
-    !membershipId ||
-    !name ||
-    !department ||
-    !contactNo ||
-    !companyName
+    departmentsToggle &&
+    departmentMenu
 ) {
-    alert("Please fill all fields.");
-    return;
+
+    departmentsToggle.addEventListener(
+        "click",
+        function () {
+
+            departmentMenu.classList.toggle(
+                "show"
+            );
+
+        }
+    );
+
 }
 
-if (!/^\d{10}$/.test(contactNo)) {
-    alert("Contact number must contain exactly 10 digits.");
-    contactNoInput.focus();
-    return;
-}
 
+// ==========================================
+// GET UNIQUE DEPARTMENTS
+// ==========================================
 
-        // VALIDATION
+function getDepartments(members) {
 
-        if (
-            !membershipId ||
-            !name ||
-            !department ||
-            !contactNo ||
-            !companyName
-        ) {
+    if (
+        !members ||
+        !Array.isArray(members)
+    ) {
 
-            alert(
-                "Please fill all fields."
-            );
-
-            return;
-        }
-
-
-        const member = {
-
-            membership_id:
-                membershipId,
-
-            name:
-                name,
-
-            department:
-                department,
-
-            contact_no:
-                contactNo,
-
-            company_name:
-                companyName
-        };
-
-
-        try {
-
-            let response;
-
-
-            // ==================================
-            // UPDATE
-            // ==================================
-
-            if (
-                saveMemberBtn.dataset.editing
-            ) {
-
-                const originalMembershipId =
-                    saveMemberBtn.dataset.editing;
-
-
-                response = await fetch(
-                    `/members/${encodeURIComponent(
-                        originalMembershipId
-                    )}`,
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-
-                            name:
-                                name,
-
-                            department:
-                                department,
-
-                            contact_no:
-                                contactNo,
-
-                            company_name:
-                                companyName
-                        })
-                    }
-                );
-
-            }
-
-
-            // ==================================
-            // ADD
-            // ==================================
-
-            else {
-
-                response = await fetch(
-                    "/members",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify(member)
-                    }
-                );
-
-            }
-
-
-            const result =
-                await response.json();
-
-
-            // ERROR
-
-            if (!response.ok) {
-
-                alert(
-                    "Error: " +
-                    (
-                        result.message ||
-                        "Something went wrong"
-                    )
-                );
-
-                return;
-            }
-
-
-            // SUCCESS
-
-            if (
-                saveMemberBtn.dataset.editing
-            ) {
-
-                alert(
-                    "Member updated successfully!"
-                );
-
-            } else {
-
-                alert(
-                    "Member added successfully!"
-                );
-
-            }
-
-
-            clearForm();
-
-            await loadMembers();
-
-            await loadDashboard();
-
-        }
-
-
-        catch (error) {
-
-            console.error(
-                "Server error:",
-                error
-            );
-
-            alert(
-                "Server error. Please try again."
-            );
-
-        }
+        return [];
 
     }
-);
 
 
-// ==========================================
-// LOAD MEMBERS
-// ==========================================
+    const departments = [
+        ...new Set(
 
-async function loadMembers() {
-
-    try {
-
-        const response =
-            await fetch("/members");
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load members"
-            );
-
-        }
-
-
-        const members =
-            await response.json();
-
-
-        allMembers =
-            members;
-
-
-        populateDepartmentFilter(
             members
-        );
+                .map(function (member) {
+
+                    return String(
+                        member.department || ""
+                    ).trim();
+
+                })
+
+                .filter(function (department) {
+
+                    return department !== "";
+
+                })
+
+        )
+    ];
 
 
-        applyFilters();
+    departments.sort(
+        function (a, b) {
 
-    }
+            return a.localeCompare(
+                b,
+                undefined,
+                {
+                    sensitivity: "base"
+                }
+            );
+
+        }
+    );
 
 
-    catch (error) {
-
-        console.error(
-            "Error loading members:",
-            error
-        );
-
-
-        memberList.innerHTML =
-            "<p>Unable to load members.</p>";
-
-    }
+    return departments;
 
 }
 
 
 // ==========================================
-// POPULATE DEPARTMENT FILTER
+// UPDATE MAIN DEPARTMENT FILTER
 // ==========================================
 
 function populateDepartmentFilter(
@@ -365,27 +147,18 @@ function populateDepartmentFilter(
 ) {
 
     if (!departmentFilter) {
+
         return;
+
     }
 
 
-    const currentDepartment =
+    const currentValue =
         departmentFilter.value;
 
 
-    const departments = [
-        ...new Set(
-            members
-                .map(
-                    member =>
-                        member.department
-                )
-                .filter(Boolean)
-        )
-    ];
-
-
-    departments.sort();
+    const departments =
+        getDepartments(members);
 
 
     departmentFilter.innerHTML = `
@@ -417,14 +190,20 @@ function populateDepartmentFilter(
     );
 
 
+    // Restore previous selection
     if (
         departments.includes(
-            currentDepartment
+            currentValue
         )
     ) {
 
         departmentFilter.value =
-            currentDepartment;
+            currentValue;
+
+    } else {
+
+        departmentFilter.value =
+            "";
 
     }
 
@@ -432,26 +211,566 @@ function populateDepartmentFilter(
 
 
 // ==========================================
-// SEARCH + DEPARTMENT FILTER
+// UPDATE MY DEPARTMENTS SIDEBAR
+// ==========================================
+
+function populateMyDepartments(
+    members
+) {
+
+    if (!departmentMenu) {
+
+        return;
+
+    }
+
+
+    const departments =
+        getDepartments(members);
+
+
+    departmentMenu.innerHTML = "";
+
+
+    // --------------------------------------
+    // NO DEPARTMENTS
+    // --------------------------------------
+
+    if (
+        departments.length === 0
+    ) {
+
+        const emptyItem =
+            document.createElement(
+                "div"
+            );
+
+        emptyItem.className =
+            "department-link";
+
+        emptyItem.textContent =
+            "No departments";
+
+        emptyItem.style.cursor =
+            "default";
+
+        departmentMenu.appendChild(
+            emptyItem
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------
+    // ALL DEPARTMENTS OPTION
+    // --------------------------------------
+
+    const allButton =
+        document.createElement(
+            "button"
+        );
+
+    allButton.type =
+        "button";
+
+    allButton.className =
+        "department-link";
+
+    allButton.dataset.department =
+        "";
+
+    allButton.textContent =
+        "All Departments";
+
+
+    allButton.addEventListener(
+        "click",
+        function () {
+
+            selectDepartment("");
+
+        }
+    );
+
+
+    departmentMenu.appendChild(
+        allButton
+    );
+
+
+    // --------------------------------------
+    // INDIVIDUAL DEPARTMENTS
+    // --------------------------------------
+
+    departments.forEach(
+        function (department) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "department-link";
+
+            button.dataset.department =
+                department;
+
+            button.textContent =
+                department;
+
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    selectDepartment(
+                        department
+                    );
+
+                }
+            );
+
+
+            departmentMenu.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// SELECT DEPARTMENT
+// ==========================================
+
+function selectDepartment(
+    department
+) {
+
+    // Update main dropdown
+    if (departmentFilter) {
+
+        departmentFilter.value =
+            department;
+
+    }
+
+
+    // Apply department + search filter
+    applyFilters();
+
+
+    // Scroll to members
+    if (memberList) {
+
+        memberList.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    // Close sidebar dropdown
+    if (departmentMenu) {
+
+        departmentMenu.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// MAIN DEPARTMENT FILTER CHANGE
+// ==========================================
+
+if (departmentFilter) {
+
+    departmentFilter.addEventListener(
+        "change",
+        function () {
+
+            applyFilters();
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// OPEN ADD MEMBER FORM
+// ==========================================
+
+if (addMemberBtn) {
+
+    addMemberBtn.addEventListener(
+        "click",
+        function () {
+
+            clearForm();
+
+            memberForm.style.display =
+                "block";
+
+            formTitle.textContent =
+                "Add New Member";
+
+            saveMemberBtn.textContent =
+                "Save Member";
+
+            membershipIdInput.disabled =
+                false;
+
+            memberForm.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// SAVE / UPDATE MEMBER
+// ==========================================
+
+if (saveMemberBtn) {
+
+    saveMemberBtn.addEventListener(
+        "click",
+        async function () {
+
+            const membershipId =
+                membershipIdInput.value.trim();
+
+            const name =
+                nameInput.value.trim();
+
+            const department =
+                departmentInput.value.trim();
+
+            const contactNo =
+                contactNoInput.value.trim();
+
+            const companyName =
+                companyNameInput.value.trim();
+
+
+            // --------------------------------------
+            // VALIDATION
+            // --------------------------------------
+
+            if (
+                !membershipId ||
+                !name ||
+                !department ||
+                !contactNo ||
+                !companyName
+            ) {
+
+                alert(
+                    "Please fill all fields."
+                );
+
+                return;
+
+            }
+
+
+            const member = {
+
+                membership_id:
+                    membershipId,
+
+                name:
+                    name,
+
+                department:
+                    department,
+
+                contact_no:
+                    contactNo,
+
+                company_name:
+                    companyName
+
+            };
+
+
+            try {
+
+                let response;
+
+
+                // ==================================
+                // UPDATE MEMBER
+                // ==================================
+
+                if (
+                    saveMemberBtn.dataset.editing
+                ) {
+
+                    const originalMembershipId =
+                        saveMemberBtn.dataset.editing;
+
+
+                    response =
+                        await fetch(
+                            `/members/${encodeURIComponent(
+                                originalMembershipId
+                            )}`,
+                            {
+
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        name:
+                                            name,
+
+                                        department:
+                                            department,
+
+                                        contact_no:
+                                            contactNo,
+
+                                        company_name:
+                                            companyName
+
+                                    })
+
+                            }
+                        );
+
+                }
+
+
+                // ==================================
+                // ADD MEMBER
+                // ==================================
+
+                else {
+
+                    response =
+                        await fetch(
+                            "/members",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        member
+                                    )
+
+                            }
+                        );
+
+                }
+
+
+                // ----------------------------------
+                // RESPONSE
+                // ----------------------------------
+
+                const result =
+                    await response.json();
+
+
+                // ----------------------------------
+                // ERROR
+                // ----------------------------------
+
+                if (!response.ok) {
+
+                    alert(
+                        "Error: " +
+                        (
+                            result.message ||
+                            "Something went wrong"
+                        )
+                    );
+
+                    return;
+
+                }
+
+
+                // ----------------------------------
+                // SUCCESS
+                // ----------------------------------
+
+                if (
+                    saveMemberBtn.dataset.editing
+                ) {
+
+                    alert(
+                        "Member updated successfully!"
+                    );
+
+                } else {
+
+                    alert(
+                        "Member added successfully!"
+                    );
+
+                }
+
+
+                // Reload everything
+                clearForm();
+
+                await loadMembers();
+
+                await loadDashboard();
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Server error:",
+                    error
+                );
+
+                alert(
+                    "Server error. Please try again."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// LOAD MEMBERS
+// ==========================================
+
+async function loadMembers() {
+
+    try {
+
+        const response =
+            await fetch("/members");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load members"
+            );
+
+        }
+
+
+        const members =
+            await response.json();
+
+
+        allMembers =
+            members;
+
+
+        // Populate both department systems
+        populateDepartmentFilter(
+            members
+        );
+
+        populateMyDepartments(
+            members
+        );
+
+
+        // Apply current filters
+        applyFilters();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Error loading members:",
+            error
+        );
+
+
+        if (memberList) {
+
+            memberList.innerHTML =
+                "<p>Unable to load members.</p>";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================
+// APPLY SEARCH + DEPARTMENT FILTER
 // ==========================================
 
 function applyFilters() {
 
+    if (!memberList) {
+
+        return;
+
+    }
+
+
     const searchText =
-        searchInput.value
-            .toLowerCase()
-            .trim();
+        searchInput
+            ? searchInput.value
+                .toLowerCase()
+                .trim()
+            : "";
 
 
     const selectedDepartment =
         departmentFilter
-            ? departmentFilter.value
+            ? departmentFilter.value.trim()
             : "";
 
 
     const filteredMembers =
         allMembers.filter(
             function (member) {
+
+
+                // ----------------------------------
+                // SEARCH MATCH
+                // ----------------------------------
 
                 const matchesSearch =
 
@@ -461,7 +780,9 @@ function applyFilters() {
                         member.name || ""
                     )
                     .toLowerCase()
-                    .includes(searchText)
+                    .includes(
+                        searchText
+                    )
 
                     ||
 
@@ -469,7 +790,9 @@ function applyFilters() {
                         member.membership_id || ""
                     )
                     .toLowerCase()
-                    .includes(searchText)
+                    .includes(
+                        searchText
+                    )
 
                     ||
 
@@ -477,7 +800,9 @@ function applyFilters() {
                         member.department || ""
                     )
                     .toLowerCase()
-                    .includes(searchText)
+                    .includes(
+                        searchText
+                    )
 
                     ||
 
@@ -485,7 +810,9 @@ function applyFilters() {
                         member.contact_no || ""
                     )
                     .toLowerCase()
-                    .includes(searchText)
+                    .includes(
+                        searchText
+                    )
 
                     ||
 
@@ -493,14 +820,32 @@ function applyFilters() {
                         member.company_name || ""
                     )
                     .toLowerCase()
-                    .includes(searchText);
+                    .includes(
+                        searchText
+                    );
+
+
+                // ----------------------------------
+                // DEPARTMENT MATCH
+                // ----------------------------------
+
+                const memberDepartment =
+                    String(
+                        member.department || ""
+                    ).trim();
 
 
                 const matchesDepartment =
+
                     !selectedDepartment ||
-                    member.department ===
+
+                    memberDepartment ===
                         selectedDepartment;
 
+
+                // ----------------------------------
+                // BOTH MUST MATCH
+                // ----------------------------------
 
                 return (
                     matchesSearch &&
@@ -526,8 +871,20 @@ function displayMembers(
     members
 ) {
 
-    memberList.innerHTML = "";
+    if (!memberList) {
 
+        return;
+
+    }
+
+
+    memberList.innerHTML =
+        "";
+
+
+    // --------------------------------------
+    // NO MEMBERS
+    // --------------------------------------
 
     if (
         !members ||
@@ -538,8 +895,13 @@ function displayMembers(
             "<p>No members found.</p>";
 
         return;
+
     }
 
+
+    // --------------------------------------
+    // CREATE CARDS
+    // --------------------------------------
 
     members.forEach(
         function (member) {
@@ -613,6 +975,7 @@ function displayMembers(
                         Edit
                     </button>
 
+
                     <button
                         class="delete-btn"
                         onclick="deleteMember('${escapeAttribute(
@@ -650,8 +1013,12 @@ function editMember(
             function (item) {
 
                 return (
-                    item.membership_id ===
-                    membershipId
+                    String(
+                        item.membership_id
+                    ) ===
+                    String(
+                        membershipId
+                    )
                 );
 
             }
@@ -665,8 +1032,13 @@ function editMember(
         );
 
         return;
+
     }
 
+
+    // --------------------------------------
+    // FILL FORM
+    // --------------------------------------
 
     membershipIdInput.value =
         member.membership_id;
@@ -683,6 +1055,10 @@ function editMember(
     companyNameInput.value =
         member.company_name;
 
+
+    // --------------------------------------
+    // EDIT MODE
+    // --------------------------------------
 
     memberForm.style.display =
         "block";
@@ -727,7 +1103,9 @@ async function deleteMember(
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -748,6 +1126,10 @@ async function deleteMember(
             await response.json();
 
 
+        // ----------------------------------
+        // ERROR
+        // ----------------------------------
+
         if (!response.ok) {
 
             alert(
@@ -759,8 +1141,13 @@ async function deleteMember(
             );
 
             return;
+
         }
 
+
+        // ----------------------------------
+        // SUCCESS
+        // ----------------------------------
 
         alert(
             "Member deleted successfully!"
@@ -792,28 +1179,27 @@ async function deleteMember(
 
 
 // ==========================================
-// SEARCH
+// SEARCH MEMBERS
 // ==========================================
 
-searchInput.addEventListener(
-    "input",
-    function () {
+if (searchInput) {
 
-        applyFilters();
-
-    }
-);
-
-
-// ==========================================
-// DEPARTMENT FILTER
-// ==========================================
-
-if (departmentFilter) {
-
-    departmentFilter.addEventListener(
-        "change",
+    searchInput.addEventListener(
+        "input",
         function () {
+
+            /*
+             * IMPORTANT:
+             * Do NOT directly filter allMembers here.
+             *
+             * applyFilters() handles:
+             *
+             * Search
+             * +
+             * Department
+             *
+             * together.
+             */
 
             applyFilters();
 
@@ -845,21 +1231,26 @@ function clearForm() {
         "";
 
 
+    // Reset edit mode
     delete saveMemberBtn.dataset.editing;
 
 
+    // Reset button
     saveMemberBtn.textContent =
         "Save Member";
 
 
+    // Reset title
     formTitle.textContent =
         "Add New Member";
 
 
+    // Enable membership ID
     membershipIdInput.disabled =
         false;
 
 
+    // Hide form
     memberForm.style.display =
         "none";
 
@@ -870,7 +1261,9 @@ function clearForm() {
 // HTML SECURITY
 // ==========================================
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     if (
         value === null ||
@@ -916,7 +1309,9 @@ function escapeHTML(value) {
 // ATTRIBUTE SECURITY
 // ==========================================
 
-function escapeAttribute(value) {
+function escapeAttribute(
+    value
+) {
 
     if (
         value === null ||
@@ -957,7 +1352,9 @@ async function loadDashboard() {
     try {
 
         const response =
-            await fetch("/dashboard");
+            await fetch(
+                "/dashboard"
+            );
 
 
         if (!response.ok) {
@@ -973,28 +1370,59 @@ async function loadDashboard() {
             await response.json();
 
 
+        // --------------------------------------
         // TOTAL MEMBERS
+        // --------------------------------------
 
-        document.getElementById(
-            "totalMembers"
-        ).textContent =
-            data.total_members;
+        const totalMembers =
+            document.getElementById(
+                "totalMembers"
+            );
 
 
+        if (totalMembers) {
+
+            totalMembers.textContent =
+                data.total_members;
+
+        }
+
+
+        // --------------------------------------
         // TOTAL DEPARTMENTS
+        // --------------------------------------
 
-        document.getElementById(
-            "totalDepartments"
-        ).textContent =
-            data.department_counts.length;
+        const totalDepartments =
+            document.getElementById(
+                "totalDepartments"
+            );
 
 
-        // DEPARTMENT OVERVIEW
+        if (totalDepartments) {
+
+            totalDepartments.textContent =
+                data.department_counts
+                    ? data.department_counts.length
+                    : 0;
+
+        }
+
+
+        // --------------------------------------
+        // DEPARTMENT LIST
+        // --------------------------------------
 
         const departmentList =
             document.getElementById(
                 "departmentList"
             );
+
+
+        if (!departmentList) {
+
+            return;
+
+        }
 
 
         departmentList.innerHTML =
@@ -1010,6 +1438,7 @@ async function loadDashboard() {
                 "<p>No departments found.</p>";
 
             return;
+
         }
 
 
@@ -1035,6 +1464,7 @@ async function loadDashboard() {
                         )}
 
                     </span>
+
 
                     <span class="department-count">
 
@@ -1062,13 +1492,102 @@ async function loadDashboard() {
             error
         );
 
-
-        document.getElementById(
-            "departmentList"
-        ).innerHTML =
-            "<p>Unable to load dashboard.</p>";
-
     }
+
+}
+
+
+// ==========================================
+// SIDEBAR TOGGLE
+// ==========================================
+
+const sidebarToggle =
+    document.getElementById(
+        "sidebarToggle"
+    );
+
+const sidebar =
+    document.getElementById(
+        "sidebar"
+    );
+
+
+if (
+    sidebarToggle &&
+    sidebar
+) {
+
+    sidebarToggle.addEventListener(
+        "click",
+        function () {
+
+            sidebar.classList.toggle(
+                "collapsed"
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// DARK / LIGHT MODE
+// ==========================================
+
+const themeToggle =
+    document.getElementById(
+        "themeToggle"
+    );
+
+
+if (themeToggle) {
+
+    themeToggle.addEventListener(
+        "click",
+        function () {
+
+            document.body.classList.toggle(
+                "dark-mode"
+            );
+
+
+            const isDark =
+                document.body.classList.contains(
+                    "dark-mode"
+                );
+
+
+            localStorage.setItem(
+                "memberhub-theme",
+                isDark
+                    ? "dark"
+                    : "light"
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// RESTORE SAVED THEME
+// ==========================================
+
+const savedTheme =
+    localStorage.getItem(
+        "memberhub-theme"
+    );
+
+
+if (
+    savedTheme === "dark"
+) {
+
+    document.body.classList.add(
+        "dark-mode"
+    );
 
 }
 
