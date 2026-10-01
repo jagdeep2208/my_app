@@ -10,7 +10,7 @@ This project was developed during an **8-week Web Development Training program a
 
 The Member Management System provides administrators with a centralized dashboard to manage organizational member records.
 
-The application supports complete **CRUD operations** along with dashboard analytics, member search, department filtering, CSV export, and a modern responsive interface.
+The application supports complete **CRUD operations** along with dashboard analytics, member search, department filtering, CSV export, and modern responsive interface.
 
 ### Core workflow
 
